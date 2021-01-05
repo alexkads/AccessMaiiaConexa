@@ -30,6 +30,13 @@ namespace AccessMaiiaConexa
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IWebHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        {
+            Configuration = configuration;
+            _env = env;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -71,6 +78,19 @@ namespace AccessMaiiaConexa
                 };
             });
 
+            if (_env.IsDevelopment())
+            {
+                services.AddDbContext<LocalDataContext>(options =>
+                    options.UseSqlite(
+                        Configuration.GetConnectionString("connectionStringSqLiteUsers")));
+            }
+            else
+            {
+                services.AddDbContext<LocalDataContext>(options =>
+                    options.UseSqlServer(
+                        Configuration.GetConnectionString("connectionStringSQLServerUsers")));
+            }
+
             //Configura��o Maiia
             services.AddDbContext<MaiiaDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringMaiia")));
             //services.AddScoped<MaiiaDataContext, MaiiaDataContext>();
@@ -80,11 +100,6 @@ namespace AccessMaiiaConexa
 
             //Configura��o Conexa - VirtualOffice
             services.AddDbContext<ConexaVirtualOfficeDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringConexaVirtualOffice")));
-
-
-            //Configura��o Local
-            services.AddDbContext<LocalDataContext>(opt => opt.UseSqlite(Configuration.GetConnectionString("connectionStringUsers")));
-            //services.AddScoped<LocalDataContext, LocalDataContext>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
