@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AccessMaiiaConexa.Models.Conexa;
+using AccessMaiiaConexa.Models.Local;
+using AccessMaiiaConexa.Models.Maiia;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -44,7 +47,10 @@ namespace AccessMaiiaConexa
             //services.AddControllers().AddNewtonsoftJson(setupAction);
             services.AddControllersWithViews().AddNewtonsoftJson(setupAction);
 
-            var key = Encoding.ASCII.GetBytes(Settings.Secret);
+            var jwtSection = Configuration.GetSection("JWTSettings");
+            services.Configure<JWTSettings>(jwtSection);
+            var appSettings = jwtSection.Get<JWTSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.SecretKey);
 
             //Padr�o de autentica��o!!!
             services.AddAuthentication(x =>
@@ -63,6 +69,27 @@ namespace AccessMaiiaConexa
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
+            });
+
+            //Configura��o Maiia
+            services.AddDbContext<MaiiaDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringMaiia")));
+            //services.AddScoped<MaiiaDataContext, MaiiaDataContext>();
+
+            //Configura��o Conexa - ClubCoWorking
+            services.AddDbContext<ConexaClubCoWorkingDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringConexaClubCoWorking")));
+
+            //Configura��o Conexa - VirtualOffice
+            services.AddDbContext<ConexaVirtualOfficeDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringConexaVirtualOffice")));
+
+
+            //Configura��o Local
+            services.AddDbContext<LocalDataContext>(opt => opt.UseSqlite(Configuration.GetConnectionString("connectionStringUsers")));
+            //services.AddScoped<LocalDataContext, LocalDataContext>();
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CheckClient Api", Version = "v1" });
             });
 
             // In production, the React files will be served from this directory
@@ -90,7 +117,26 @@ namespace AccessMaiiaConexa
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CheckClient API V1");
+            });
+
             app.UseRouting();
+
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -98,6 +144,12 @@ namespace AccessMaiiaConexa
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<LocalDataContext>();
+                context.Database.EnsureCreated();
+            }
 
             app.UseSpa(spa =>
             {

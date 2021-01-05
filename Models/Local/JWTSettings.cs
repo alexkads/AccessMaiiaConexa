@@ -3,8 +3,6 @@ namespace AccessMaiiaConexa.Models.Local
 {
     public class JWTSettings
     {
-        public JWTSettings()
-        {
-        }
+        public string SecretKey { get; set; }
     }
 }
