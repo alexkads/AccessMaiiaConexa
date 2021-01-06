@@ -31,7 +31,7 @@ namespace AccessMaiiaConexa.Models.Local
                 {
                     Id = 1,
                     Username = "admin",
-                    Password = "admin",
+                    Password = "admin@2021",
                     Role = "manager"
                 }
             );
@@ -41,7 +41,7 @@ namespace AccessMaiiaConexa.Models.Local
                 {
                     Id = 2,
                     Username = "user",
-                    Password = "user",
+                    Password = "user@2021",
                     Role = "employee"
                 }
             );

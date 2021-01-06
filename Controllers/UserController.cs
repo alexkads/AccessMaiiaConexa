@@ -102,7 +102,6 @@ namespace AccessMaiiaConexa.Controllers
                     [FromServices] LocalDataContext context,
                     [FromBody] User model)
         {
-            await GenerateUserManager(context);
             var user = await context.Users
                 .AsNoTracking()
                 .Where(x => x.Username == model.Username && x.Password == model.Password)
@@ -138,27 +137,6 @@ namespace AccessMaiiaConexa.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
-        }
-
-        private async Task GenerateUserManager(LocalDataContext context)
-        {
-            User model = new User
-            {
-                Username = "alexkads@gmail.com",
-                Password = "@Zenitp770128",
-                Role = "manager"
-            };
-
-            var user = await context.Users
-                .AsNoTracking()
-                .Where(x => x.Username == model.Username && x.Password == model.Password)
-                .FirstOrDefaultAsync();
-
-            if (user == null)
-            {
-                context.Users.Add(model);
-                await context.SaveChangesAsync();
-            }
         }
    }
 }
