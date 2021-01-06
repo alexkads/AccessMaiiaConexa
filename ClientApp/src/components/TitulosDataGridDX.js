@@ -29,7 +29,14 @@ const filterBuilderPopupPosition = {
     at: 'top',
     my: 'top',
     offset: { y: 10 }
-  };
+};
+
+function convertUnicode(input) {
+    return input.replace(/\\u(\w\w\w\w)/g, function (a, b) {
+        var charcode = parseInt(b, 16);
+        return String.fromCharCode(charcode);
+    });
+}
 
 export class TitulosDataGridDX extends Component {
        
@@ -42,6 +49,8 @@ export class TitulosDataGridDX extends Component {
     componentDidMount() {
         this.populateTitulosDataGrid();
     }
+
+
 
     onExporting(e) {
         const workbook = new ExcelJS.Workbook();
