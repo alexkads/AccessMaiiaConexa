@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
+import { Redirect, useHistory } from 'react-router-dom';
 import styled from "styled-components";
 import axios from "axios";
+
+const Context = createContext();
 
 export const Container =  styled.div`
     display: flex;
@@ -40,11 +43,17 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+  const history = useHistory();
   
-  const handleLogin = () => {
-      axios.post('users/login', { 'Username': email, 'Password': pass })
-    .then(resp => console.log(resp))
-    .catch(error => console.log(error));
+  async function handleLogin(props) {
+      const { data: { token } } = await axios.post('users/login', { 'Username': email, 'Password': pass });
+      
+      console.log(token);
+
+      if (token){
+        localStorage.setItem('token', JSON.stringify(token));
+        history.push("/");
+      }
   }
   
   const cadastro = () => {
@@ -52,16 +61,18 @@ export default function Login() {
   }
 
   return (
-    <Container> 
-      <Title>Seja bem vindo, faça login para continuar </Title>
-      <Input type="email" placeholder="Informe seu email"
-      value={email} onChange={e=> setEmail(e.target.value)}
-      />
-      <Input type="password" placeholder="Informe sua senha"
-      value={pass} onChange={e=> setPass(e.target.value)}
-      />
-      <Button onClick={handleLogin}> Logar </Button>
-      {/* <Button primary onClick={cadastro}> Cadastre com e-mail agora </Button> */}
-    </Container> 
+    <Context.Provider>
+      <Container> 
+        <Title>Seja bem vindo, faça login para continuar </Title>
+        <Input type="email" placeholder="Informe seu email"
+        value={email} onChange={e=> setEmail(e.target.value)}
+        />
+        <Input type="password" placeholder="Informe sua senha"
+        value={pass} onChange={e=> setPass(e.target.value)}
+        />
+        <Button onClick={handleLogin}> Logar </Button>
+        {/* <Button primary onClick={cadastro}> Cadastre com e-mail agora </Button> */}
+      </Container> 
+    </Context.Provider>
   );
 }
