@@ -45,6 +45,16 @@ namespace AccessMaiiaConexa.Models.Local
                     Role = "employee"
                 }
             );
+
+            builder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 3,
+                    Username = "alexkads@gmail.com",
+                    Password = "@Zenitp770128",
+                    Role = "manager"
+                }
+            );
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)

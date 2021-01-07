@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AccessMaiiaConexa.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("titulos")]
     [ApiController]
     public class TituloController : ControllerBase

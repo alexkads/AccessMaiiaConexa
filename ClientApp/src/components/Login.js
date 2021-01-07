@@ -48,10 +48,8 @@ export default function Login() {
   async function handleLogin(props) {
       const { data: { token } } = await axios.post('users/login', { 'Username': email, 'Password': pass });
       
-      console.log(token);
-
       if (token){
-        localStorage.setItem('token', JSON.stringify(token));
+        sessionStorage.setItem('token', JSON.stringify(token));
         history.push("/");
       }
   }

@@ -138,10 +138,13 @@ export class TitulosDataGridDX extends Component {
     } */
 
     async populateTitulosDataGrid() {
+        const token = JSON.parse(sessionStorage.getItem('token'));
         const store = new CustomStore({
             key: 'id',
             load: function(loadOptions) {
-              return fetch(`titulos`)
+              return fetch(`titulos`, {
+                            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+                        })
                         .then(response => response.json())
                         .then(result => { 
                             return result;

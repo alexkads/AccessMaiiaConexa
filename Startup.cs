@@ -73,18 +73,21 @@ namespace AccessMaiiaConexa
                 };
             });
 
-            if (_env.IsDevelopment())
-            {
-                services.AddDbContext<LocalDataContext>(options =>
-                    options.UseSqlite(
-                        Configuration.GetConnectionString("connectionStringSqLiteUsers")));
-            }
-            else
-            {
-                services.AddDbContext<LocalDataContext>(options =>
-                    options.UseSqlServer(
-                        Configuration.GetConnectionString("connectionStringSQLServerUsers")));
-            }
+            services.AddDbContext<LocalDataContext>(options =>
+                options.UseInMemoryDatabase(databaseName: "InMemoryDb"), ServiceLifetime.Scoped, ServiceLifetime.Scoped);
+
+            // if (_env.IsDevelopment())
+            // {
+            //    services.AddDbContext<LocalDataContext>(options =>
+            //        options.UseSqlite(
+            //            Configuration.GetConnectionString("connectionStringSqLiteUsers")));
+            // }
+            // else
+            // {
+            //    services.AddDbContext<LocalDataContext>(options =>
+            //        options.UseSqlServer(
+            //            Configuration.GetConnectionString("connectionStringSQLServerUsers")));
+            // }
 
             //Configura��o Maiia
             services.AddDbContext<MaiiaDataContext>(opt => opt.UseMySQL(Configuration.GetConnectionString("connectionStringMaiia")));

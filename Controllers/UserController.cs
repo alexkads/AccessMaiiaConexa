@@ -17,12 +17,12 @@ namespace AccessMaiiaConexa.Controllers
    [Route("users")]
    public class UserController : ControllerBase
    {
-       //private readonly JWTSettings _jwtsettings;
+       private readonly JWTSettings _jwtsettings;
 
-       //public UserController(IOptions<JWTSettings> jwtsettings)
-       //{
-       //    _jwtsettings = jwtsettings.Value;
-       //}
+        public UserController(IOptions<JWTSettings> jwtsettings)
+        {
+           _jwtsettings = jwtsettings.Value;
+        }
 
         [HttpGet]
         [Route("")]
@@ -123,8 +123,7 @@ namespace AccessMaiiaConexa.Controllers
         private string GenerateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            //var key = Encoding.ASCII.GetBytes(_jwtsettings.SecretKey);
-            var key = Encoding.ASCII.GetBytes("90321890823189897347");
+            var key = Encoding.ASCII.GetBytes(_jwtsettings.SecretKey);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
