@@ -9,7 +9,7 @@ import PrivateRoute from './PrivateRoute';
 
 const Routes = () => (
     <Switch>
-        <Route exact path='/' component={Home} />
+        <PrivateRoute exact path='/' component={Home} />
         <Route exact path='/Login' component={Login} />
         <PrivateRoute path='/titulos-datagrid' component={TitulosDataGrid} />
         <PrivateRoute path='/titulos-datagriddx' component={TitulosDataGridDX} />
