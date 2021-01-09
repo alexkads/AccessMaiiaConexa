@@ -54,6 +54,6 @@ namespace AccessMaiiaConexa.Controllers
             return Ok(result);
         }
 
-        private Func<string, string> htmlDecode = value => HttpUtility.HtmlDecode(value);
+        private readonly Func<string, string> htmlDecode = value => HttpUtility.HtmlDecode(value);
     }
 }
