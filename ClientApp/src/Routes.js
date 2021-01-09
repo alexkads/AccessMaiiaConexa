@@ -4,7 +4,7 @@ import { Home } from './components/Home';
 import Login from './components/Login';
 import { TitulosDataGrid } from './components/TitulosDataGrid';
 import { TitulosDataGridDX } from './components/TitulosDataGridDX';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 
 const Routes = () => (

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 //import authService from './api-authorization/AuthorizeService'
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
-import { ReadableStream } from "web-streams-polyfill/ponyfill";
 
 export class TitulosDataGrid extends Component {
 

@@ -1,5 +1,5 @@
-import React, { useState, createContext, useContext } from 'react';
-import { Redirect, useHistory } from 'react-router-dom';
+import React, { useState, createContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import styled from "styled-components";
 import axios from "axios";
 
@@ -54,10 +54,6 @@ export default function Login() {
       }
   }
   
-  const cadastro = () => {
-    console.log(pass);
-  }
-
   return (
     <Context.Provider>
       <Container> 

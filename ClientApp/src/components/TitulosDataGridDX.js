@@ -20,9 +20,8 @@ import CustomStore from 'devextreme/data/custom_store';
 //import authService from './api-authorization/AuthorizeService';
 import ExcelJS from 'exceljs';
 import saveAs from 'file-saver';
+import axios from "axios";
 import './TitulosDataGridDX.css';
-
-const columns = ['cnpj', 'razao', 'vencimento', 'valor','pago'];
 
 const filterBuilderPopupPosition = {
     of: window,
@@ -30,13 +29,6 @@ const filterBuilderPopupPosition = {
     my: 'top',
     offset: { y: 10 }
 };
-
-function convertUnicode(input) {
-    return input.replace(/\\u(\w\w\w\w)/g, function (a, b) {
-        var charcode = parseInt(b, 16);
-        return String.fromCharCode(charcode);
-    });
-}
 
 export class TitulosDataGridDX extends Component {
        
@@ -118,42 +110,19 @@ export class TitulosDataGridDX extends Component {
         );
     }
 
-/*     async populateTitulosDataGridToken() {
-        const token = await authService.getAccessToken();
-        const store = new CustomStore({
-            key: 'id',
-            load: function(loadOptions) {
-              return fetch(`titulos`, {
-                headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
-            })
-            .then(response => response.json())
-            .then(result => { 
-                return result;
-            })
-            .catch(() => { throw 'Data Loading Error'; });
-            }
-          });
-       
-        this.setState({ titulos: store });
-    } */
-
     async populateTitulosDataGrid() {
         const token = JSON.parse(sessionStorage.getItem('token'));
+        const headers = !token ? {} : { 'headers': { 'Authorization': `Bearer ${token}` } };
+        
         const store = new CustomStore({
             key: 'id',
-            load: function(loadOptions) {
-              return fetch(`titulos`, {
-                            headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
-                        })
-                        .then(response => response.json())
-                        .then(result => { 
-                            return result;
-                        })
-            .catch(() => { throw 'Data Loading Error'; });
+            load: async function(loadOptions) {              
+                return axios.get(`titulos`, headers)
+                    .then(response => response.data)
+                    .catch(() => { throw new Error('Data Loading Error'); });
             }
-          });
+        });
        
         this.setState({ titulos: store });
-    }
-    
+    }   
 }

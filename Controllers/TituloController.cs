@@ -5,7 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace AccessMaiiaConexa.Controllers
 {
@@ -36,7 +38,7 @@ namespace AccessMaiiaConexa.Controllers
                         w.Entidade.status == "Ativo"))
                 .Select(x => new {
                     x.Entidade.cnpj,
-                    x.Entidade.razao,
+                    razao = htmlDecode(x.Entidade.razao),
                     x.Entidade.status,
                     x.Entidade.EntidadeDetalhes.FirstOrDefault().unidade,
                     x.tipo,
@@ -51,5 +53,7 @@ namespace AccessMaiiaConexa.Controllers
 
             return Ok(result);
         }
+
+        private Func<string, string> htmlDecode = value => HttpUtility.HtmlDecode(value);
     }
 }
