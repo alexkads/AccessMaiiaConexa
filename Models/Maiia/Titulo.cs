@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace AccessMaiiaConexa.Models.Maiia
 {
     public partial class Titulo
@@ -12,6 +14,8 @@ namespace AccessMaiiaConexa.Models.Maiia
         public double pago { get; set; }
 
         public int EntidadeId { get; set; }
+
+        public int numcorte { get; set; }
 
         public string tipo { get; set; }
 

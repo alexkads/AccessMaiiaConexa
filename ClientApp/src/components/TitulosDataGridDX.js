@@ -90,14 +90,29 @@ export class TitulosDataGridDX extends Component {
                         showInfo={true} />
                     <Column dataField="id" />
                     <Column dataField="cnpj" width={150} fixed={true} caption="CNPJ/CPF" />
-                    <Column dataField="unidade" width={150} caption="Unidade" />
+                    <Column dataField="unidade" width={150} caption="Unidade" visible={false}/>
+                    <Column dataField="nomeunidade" width={150} caption="Nome da Unidade" />
                     <Column dataField="razao" width={500} caption="Razão Social"/>
                     <Column dataField="status" width={100} caption="Status"/>
                     <Column dataField="tipo" width={150} caption="Tipo de boleto"/>
                     <Column dataField="tipoentidade" width={150} caption="Tipo de Entidade"/>
-                    <Column dataField="vencimento" width={150} dataType="date" format="dd/MMM/yyyy"/>
+                    <Column dataField="vencimento" width={150} dataType="date" format="dd/MM/yyyy"/>
                     <Column dataField="valor" format="#,##0.00" />
                     <Column dataField="pago" format="#,##0.00" />
+                    <Column dataField="produto" width={150} caption="Produto" />
+                    <Column dataField="parcela" width={150} caption="Parcela" />
+                    <Column dataField="telefones_fixo" width={150} caption="Telefones Fixo" />
+                    <Column dataField="telefones_celular" width={150} caption="Telefones Celular" />
+                    <Column dataField="emails" width={150} caption="Emails" />
+                    <Column dataField="ruadecorrepondencia" width={150} caption="Rua de Correspondência" />
+                    <Column dataField="numerodecorrepondencia" width={150} caption="Número de Correspondência" />
+                    <Column dataField="complementodecorrepondencia" width={150} caption="Complemento de Correspondência" />
+                    <Column dataField="bairrodecorrepondencia" width={150} caption="Bairro de Correspondência" />
+                    <Column dataField="cepdecorrepondencia" width={150} caption="CEP de Correspondência" />
+                    <Column dataField="cidadedecorrepondencia" width={150} caption="Cidade de Correspondência" />
+                    <Column dataField="ie" width={150} caption="IE" />
+                    <Column dataField="rg" width={150} caption="RG" />
+
                     <Summary>
                         <TotalItem
                             column="valor"

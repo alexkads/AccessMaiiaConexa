@@ -18,6 +18,8 @@ namespace AccessMaiiaConexa.Models.Maiia
         public virtual DbSet<EntidadeDetalhe> EntidadeDetalhes { get; set; }
         public virtual DbSet<Contato> Contatos { get; set; }
         public virtual DbSet<Titulo> Titulos { get; set; }
+        public virtual DbSet<CalendarioDeReserva> CalendarioDeReservas { get; set; }
+        public virtual DbSet<Produto> Produtos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +51,13 @@ namespace AccessMaiiaConexa.Models.Maiia
 
             //Mapeamento necessario, pois o nome da tabela e o mesmo do campo chave
             modelBuilder.Entity<Titulo>().Property(s => s.EntidadeId).HasColumnName("Entidade");
+
+            modelBuilder.Entity<Produto>()
+                .ToTable("produtos");
+
+            modelBuilder.Entity<CalendarioDeReserva>()
+                .ToTable("calendariodereserva");
+
         }
     }
 }
