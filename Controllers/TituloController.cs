@@ -167,6 +167,7 @@ namespace AccessMaiiaConexa.Controllers
                 INNER JOIN entidades_detalhes as ENTDET on ENT.ID = ENTDET.relacionamento
                 INNER JOIN entidades as UNID_ENT on ENTDET.unidade = UNID_ENT.id
                 where ENT.tipo = 'Cliente'
+                and TIT.valor > TIT.pago
                 and ENT.status in ('Contratual', 'Esporadico', 'Pendente', 'Ativo')
                 and TIT.vencimento > '0000-00-00';";
 
