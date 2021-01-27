@@ -117,33 +117,49 @@ namespace AccessMaiiaConexa.Controllers
                 TIT.vencimento,
                 TIT.valor,
                 TIT.pago,
+
+                (SELECT sum(if(TITDET.valor < 0, ABS(TITDET.valor), TITDET.valor))
+                        FROM titulos_detalhes as TITDET WHERE TITDET.titulo=TIT.id)
+                        as pagodetalhe,
+
+                (SELECT sum(TITDET.valor)
+                        FROM titulos_detalhes as TITDET WHERE TITDET.titulo=TIT.id
+                        AND tipo NOT IN ('TAXA','02','Acrescimo')) as pagosemacrescimo,
+
+                CASE 
+                    WHEN (TIT.valor - TIT.pago) <= 0
+                    THEN (SELECT date_format(max(TITDET.dataregistro), '%Y-%m-%d')
+                        FROM titulos_detalhes as TITDET WHERE TITDET.titulo=TIT.id
+                        AND tipo NOT IN ('TAXA','02','Acrescimo')) 
+                    ELSE NULL
+                END as 'dataquitacao',
                 TIT.entidade as entidadeid,
 
                 CASE
-	                WHEN (SELECT descricao FROM produtos 
-		                Inner Join calendariodereserva on produtos.codigo=calendariodereserva.codigo
-		                Where calendariodereserva.numcorte = TIT.numcorte limit 1) <> ''
-	                THEN
-		                LEFT(concat(UNID_ENT.primeirocontato,'-',
-		                (SELECT descricao FROM produtos 
-		                Inner Join calendariodereserva on produtos.codigo=calendariodereserva.codigo
-		                Where calendariodereserva.numcorte = TIT.numcorte limit 1)),100)
-	                ELSE
-		                LEFT(concat(UNID_ENT.primeirocontato,'-','Sem Produto-',TIT.numcorte),100)
+                    WHEN (SELECT descricao FROM produtos 
+                        Inner Join calendariodereserva on produtos.codigo=calendariodereserva.codigo
+                        Where calendariodereserva.numcorte = TIT.numcorte limit 1) <> ''
+                    THEN
+                        LEFT(concat(UNID_ENT.primeirocontato,'-',
+                        (SELECT descricao FROM produtos 
+                        Inner Join calendariodereserva on produtos.codigo=calendariodereserva.codigo
+                        Where calendariodereserva.numcorte = TIT.numcorte limit 1)),100)
+                    ELSE
+                        LEFT(concat(UNID_ENT.primeirocontato,'-','Sem Produto-',TIT.numcorte),100)
                 END as produto,
                 concat('MÊS REF PARCELA(',date_format(TIT.vencimento, '%m/%Y'),')') as 'parcela',
 
                 (select GROUP_CONCAT(DISTINCT REPLACE(CONT.telfixo, '/', ';') SEPARATOR ';')
-	                from contatos as CONT where CONT.tipoendereco like 'Cob%' And CONT.relacionamento = ENT.id)
-	                AS telefones_fixo,
+                    from contatos as CONT where CONT.tipoendereco like 'Cob%' And CONT.relacionamento = ENT.id)
+                    AS telefones_fixo,
 
                 (select GROUP_CONCAT(DISTINCT REPLACE(CONT.telmovel, '/', ';') SEPARATOR ';')
-	                from contatos as CONT where CONT.tipoendereco like 'Cob%' And CONT.relacionamento = ENT.id)
-	                AS telefones_celular,
-    
+                    from contatos as CONT where CONT.tipoendereco like 'Cob%' And CONT.relacionamento = ENT.id)
+                    AS telefones_celular,
+
                 (select GROUP_CONCAT(DISTINCT IF(CONT.email_cc Is Null or CONT.email_cc = '', CONT.email, concat(CONT.email, '; ', CONT.email_cc)) SEPARATOR '; ')
-	                from contatos as CONT where CONT.relacionamento = ENT.id)
-	                AS 'emails',
+                    from contatos as CONT where CONT.relacionamento = ENT.id)
+                    AS 'emails',
 
                 (select CONT.logradouro from contatos as CONT where CONT.tipoendereco like 'Corres%' And CONT.relacionamento = ENT.id and (CONT.logradouro <> ENT.logradouro and CONT.numero <> ENT.numero) Limit 1) as 'ruadecorrepondencia',
                 (select CONT.numero from contatos as CONT where CONT.tipoendereco like 'Corres%' And CONT.relacionamento = ENT.id and (CONT.logradouro <> ENT.logradouro and CONT.numero <> ENT.numero) Limit 1) as 'numerodecorrepondencia',
@@ -154,12 +170,14 @@ namespace AccessMaiiaConexa.Controllers
 
                 ENT.ie as 'ie',
 
+
+
                 CASE
-	                WHEN (length(ENT.cnpj) = 14)
-	                THEN
-		                (select CONT.rg 
-		                from contatos as CONT where CONT.assina = true and CONT.relacionamento = ENT.id order by ENT.id limit 1)
-	                ELSE null
+                    WHEN (length(ENT.cnpj) = 14)
+                    THEN
+                        (select CONT.rg 
+                        from contatos as CONT where CONT.assina = true and CONT.relacionamento = ENT.id order by ENT.id limit 1)
+                    ELSE null
                 END as 'rg'
 
                 FROM titulos as TIT
@@ -167,9 +185,14 @@ namespace AccessMaiiaConexa.Controllers
                 INNER JOIN entidades_detalhes as ENTDET on ENT.ID = ENTDET.relacionamento
                 INNER JOIN entidades as UNID_ENT on ENTDET.unidade = UNID_ENT.id
                 where ENT.tipo = 'Cliente'
-                and TIT.valor > TIT.pago
                 and ENT.status in ('Contratual', 'Esporadico', 'Pendente', 'Ativo')
-                and TIT.vencimento > '0000-00-00';";
+                and TIT.vencimento > '0000-00-00'
+                and (UNID_ENT.primeirocontato like '%Paulista%' 
+                or UNID_ENT.primeirocontato like '%Shopp%') 
+                and UNID_ENT.primeirocontato not in ('x', 'Y')
+                and (SELECT Count(TITDET.dataregistro)
+                FROM titulos_detalhes as TITDET WHERE TITDET.titulo=TIT.id
+                AND tipo NOT IN ('TAXA','02','Acrescimo')) = 0;";
 
                 var result = await connection.QueryAsync<TituloResult>(queryString);
                 var resultdeco = result.Select(x => new
